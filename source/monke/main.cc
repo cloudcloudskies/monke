@@ -1,24 +1,6 @@
-// codeshaunted - monke
-// source/monke/main.cc
-// contains entry point
-// Copyright 2022 codeshaunted
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org / licenses / LICENSE - 2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissionsand
-// limitations under the License.
-
 #include <iostream>
-#include <cstring>
-
-#include "pack.hh" 
+#include <string>
+#include "pack.hh"
 #include "config.hh"
 
 void help() {
@@ -26,8 +8,20 @@ void help() {
   std::cout << "Copyright 2021 codeshaunted" << std::endl << std::endl;
   std::cout << "Usage: monke <command> [arguments]" << std::endl << std::endl;
   std::cout << "Commands:" << std::endl;
-  std::cout << " pack <input path> <output path> <password>" << std::endl;
-  std::cout << " unpack <input path> <output path> <password>" << std::endl;
+  std::cout << "  pack <input path> <output path> <password>" << std::endl;
+  std::cout << "  unpack <input path> <output path> <password>" << std::endl;
+}
+
+void packOrUnpack(const std::string& command, const std::string& input, const std::string& output, const std::string& password) {
+  if (command == "pack" || command == "p") {
+    monke::Pack::pack(input, output, password);
+    std::cout << "Packed '" << input << "' with password '" << password << "' to '" << output << "'." << std::endl;
+  } else if (command == "unpack" || command == "u") {
+    monke::Pack::unpack(input, output, password);
+    std::cout << "Unpacked '" << input << "' with password '" << password << "' to '" << output << "'." << std::endl;
+  } else {
+    help();
+  }
 }
 
 int main(int argc, char* argv[]) {
@@ -36,30 +30,13 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  if (!strcmp(argv[1], "unpack") || !strcmp(argv[1], "u")) {
-    if (argc != 5) {
-      help();
-      return 0;
-    }
-
-    monke::Pack::unpack(argv[2], argv[3], argv[4]);
-
-    std::cout << "Unpacked '" << argv[2] << "' with password '" << argv[4] << "' to '" << argv[3] << "'." << std::endl;
-  }
-  else if (!strcmp(argv[1], "pack") || !strcmp(argv[1], "p")) {
-    if (argc != 5) {
-      help();
-      return 0;
-    }
-
-    monke::Pack::pack(argv[2], argv[3], argv[4]);
-
-    std::cout << "Packed '" << argv[2] << "' with password '" << argv[4] << "' to '" << argv[3] << "'." << std::endl;
-  }
-  else {
+  const std::string command = argv[1];
+  if (argc != 5) {
     help();
     return 0;
   }
+
+  packOrUnpack(command, argv[2], argv[3], argv[4]);
 
   return 0;
 }
